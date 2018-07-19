@@ -1,6 +1,7 @@
 import hashlib
 import json
 import sys
+import requests
 
 from time import time
 from uuid import uuid4
@@ -76,17 +77,11 @@ class Blockchain(object):
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
 
-        # response = {
-        #     'registered_nodes': self.nodes,
-        # }
-        #
-        # return jsonify(response), 200
-
         return self.nodes, 200
 
     def validChain(self, chain):
         last_block = chain[0]
-        current_indexx = 1
+        current_index = 1
 
         while current_index < len(chain):
             block = chain[current_index]
@@ -99,7 +94,7 @@ class Blockchain(object):
                 return False
 
             # checks that the Proof of Work is correct
-            if not self.valid_proof(last_block['proof'], block['proof']):
+            if not self.validProof(last_block['proof'], block['proof']):
                 return False
 
             last_block = block
@@ -116,18 +111,18 @@ class Blockchain(object):
 
         # grabs and verifies the chains from all the nodes in our network
         for node in neighbours:
-            response = request.get(f'http://{node}/chain')
+            response = requests.get(f'http://{node}/chain')
 
             if response.status_code == 200:
                 length = response.json()['length']
                 chain = response.json()['chain']
 
-                # Check if the length is longer and the chain is valid
+                # checks if the length is longer and the chain is valid
                 if length > max_length and self.validChain(chain):
                     max_length = length
                     new_chain = chain
 
-        # replaces our chain if new is discovered, valid chain longer than ours
+        # replaces our chain if new longer valid chain is discovered
         if new_chain:
             self.chain = new_chain
             return True
