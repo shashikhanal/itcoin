@@ -1,1 +1,1 @@
-web: python blockchain.py 7000
+web: python blockchain.py $PORT
