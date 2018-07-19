@@ -3,5 +3,7 @@ python:
   - "3.6.3"
 install:
   - pip install Flask==0.12.2 requests==2.18.4
+script:
+  - python --version
 after_success:
   - python blockchain.py 7000
