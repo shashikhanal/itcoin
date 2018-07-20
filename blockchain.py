@@ -32,7 +32,6 @@ class Blockchain(object):
 
         # resets the current list of transactions
         self.current_transactions = []
-
         self.chain.append(block)
 
         return block
@@ -142,6 +141,24 @@ class Blockchain(object):
 
         return self.addresses
 
+    def getBalance(self):
+        chain_length = len(self.chain)
+        sent_balance = 0
+        received_balance = 0
+        net_balance = 0
+
+        for chain_index in range(chain_length):
+            transaction_length = len(self.chain[chain_index]['transactions'])
+
+            for trans_index in range(transaction_length):
+                transaction = self.chain[chain_index]['transactions'][trans_index]
+
+                if transaction['sender'] == node_identifier:
+                    sent_balance += transaction['amount']
+                elif transaction['recipient'] == node_identifier:
+                    received_balance += transaction['amount']
+
+        return sent_balance, received_balance, received_balance - sent_balance
 
 
 # instantiate our node
@@ -173,7 +190,7 @@ def mine():
     blockchain.newTransaction(
         sender = "0",
         recipient = node_identifier,
-        amount = 100,
+        amount = 10,
     )
 
     # creates the new block by adding it to the chain
@@ -280,6 +297,18 @@ def getIdentifier():
 def getAddresses():
     response = {
         'addresses': list(blockchain.getAddresses())
+    }
+
+    return jsonify(response), 200
+
+@app.route('/balance', methods=['GET'])
+def getBalance():
+    balance = blockchain.getBalance()
+
+    response = {
+        'sent': balance[0],
+        'received': balance[1],
+        'net': balance[2],
     }
 
     return jsonify(response), 200
