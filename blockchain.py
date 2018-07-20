@@ -15,6 +15,7 @@ class Blockchain(object):
         self.chain = []
         self.current_transactions = []
         self.nodes = set()
+        self.addresses = set()
 
         # creates the genesis block
         self.newBlock(previous_hash = 1, proof=100)
@@ -128,6 +129,18 @@ class Blockchain(object):
             return True
 
         return False
+
+    def getAddresses(self):
+        neighbours = self.nodes
+        max_length = len(self.chain)
+
+        for node in neighbours:
+            response = requests.get(f'http://{node}/who-am-i')
+
+            if response.status_code == 200:
+                self.addresses.add(response.json()['address'])
+
+        return self.addresses
 
 
 
@@ -258,7 +271,15 @@ def getNodes():
 @app.route('/who-am-i', methods=['GET'])
 def getIdentifier():
     response = {
-        'identifier': node_identifier,
+        'address': node_identifier,
+    }
+
+    return jsonify(response), 200
+
+@app.route('/addresses', methods=['GET'])
+def getAddresses():
+    response = {
+        'addresses': list(blockchain.getAddresses())
     }
 
     return jsonify(response), 200
