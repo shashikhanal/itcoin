@@ -255,6 +255,14 @@ def getNodes():
 
     return jsonify(response), 200
 
+@app.route('/who-am-i', methods=['GET'])
+def getIdentifier():
+    response = {
+        'identifier': node_identifier,
+    }
+
+    return jsonify(response), 200
+
 if __name__ == '__main__':
     port = int(sys.argv[1])
     app.run(host = '0.0.0.0', port = port)
