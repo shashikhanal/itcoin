@@ -247,6 +247,14 @@ def consensus():
 
     return jsonify(response), 200
 
+@app.route('/nodes', methods=['GET'])
+def getNodes():
+    response = {
+        'nodes': list(blockchain.nodes)
+    }
+
+    return jsonify(response), 200
+
 if __name__ == '__main__':
     port = int(sys.argv[1])
     app.run(host = '0.0.0.0', port = port)
