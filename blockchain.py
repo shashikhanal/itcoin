@@ -197,11 +197,12 @@ blockchain = Blockchain()
 
 @app.route('/mine', methods=['GET'])
 def mine():
+    # Miners can mine even if there are no transactions in the network
     # if no current (un-mined) transaction are available return immedietely
-    if (len(blockchain.current_transactions) < 1):
-        return jsonify({
-            'error': 'No un-mined transactions available in the network'
-        }), 400
+    # if (len(blockchain.current_transactions) < 1):
+    #     return jsonify({
+    #         'error': 'No un-mined transactions available in the network'
+    #     }), 400
 
     # runs the proof of work algorithm to get the next proof
     last_block = blockchain.lastBlock
