@@ -129,7 +129,7 @@ class Blockchain(object):
 
         return False
 
-    def getAddresses(self):
+    def syncAddresses(self):
         neighbours = self.nodes
         max_length = len(self.chain)
 
@@ -171,6 +171,10 @@ class Blockchain(object):
 
         # cannot send amount to self address
         if values['recipient'] == node_identifier:
+            return False
+
+        # zero amount cannot be sent
+        if values['amount'] <= 0:
             return False
 
         if values['sender'] == node_identifier:
@@ -250,8 +254,7 @@ def newTransaction():
         status = 201
     else:
         response = {
-            'message': 'You do not have sufficient balance to perform this transaction.',
-            'balance': blockchain.getBalance()
+            'message': 'You cannot perform this transaction',
         }
         status = 409
 
@@ -327,10 +330,18 @@ def getIdentifier():
 
     return jsonify(response), 200
 
+@app.route('/sync/addresses', methods=['GET'])
+def syncAddresses():
+    response = {
+        'addresses': list(blockchain.syncAddresses())
+    }
+
+    return jsonify(response), 200
+
 @app.route('/addresses', methods=['GET'])
 def getAddresses():
     response = {
-        'addresses': list(blockchain.getAddresses())
+        'addresses': list(blockchain.addresses),
     }
 
     return jsonify(response), 200
