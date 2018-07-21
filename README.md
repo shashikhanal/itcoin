@@ -1,8 +1,5 @@
-# itcoin
-Blockchain based crypto currency developed just for fun
-
-# Log Processor [![Build Status](https://travis-ci.com/shashikhanal/itcoin.svg?branch=master)](https://travis-ci.com/shashikhanal/itcoin)
-> A primitive implementation of blockchain based crypto currency.
+# itcoin [![Build Status](https://travis-ci.com/shashikhanal/itcoin.svg?branch=master)](https://travis-ci.com/shashikhanal/itcoin)
+> Blockchain based crypto currency developed just for fun
 
 ## Run
 ```
