@@ -176,7 +176,7 @@ class Blockchain(object):
         if values['sender'] == node_identifier:
             currentBalance = blockchain.getBalance()
 
-            if (currentBalance['net_amount'] - values['amount'] < 0):
+            if (currentBalance['net_balance'] - values['amount'] < 0):
                 return False
 
             return True
