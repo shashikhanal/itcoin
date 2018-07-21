@@ -131,7 +131,6 @@ class Blockchain(object):
 
     def syncAddresses(self):
         neighbours = self.nodes
-        max_length = len(self.chain)
 
         for node in neighbours:
             response = requests.get(f'http://{node}/who-am-i')
@@ -186,6 +185,18 @@ class Blockchain(object):
             return True
 
         return False
+
+    def syncCurrentTransactions(self):
+        neighbours = self.nodes
+
+        for node in neighbours:
+            response = requests.get(f'http://{node}/transactions/current')
+
+            if response.status_code == 200:
+                for transaction in response.json()['current_transactions']:
+                    self.current_transactions.append(transaction)
+
+        return self.current_transactions
 
 
 # instantiate our node
@@ -264,6 +275,14 @@ def newTransaction():
 def currentTransactions():
     response = {
         'current_transactions': blockchain.current_transactions,
+    }
+
+    return jsonify(response), 200
+
+@app.route('/sync/transactions', methods=['GET'])
+def syncTransactions():
+    response = {
+        'current_transactions': blockchain.syncCurrentTransactions(),
     }
 
     return jsonify(response), 200
