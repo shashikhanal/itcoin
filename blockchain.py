@@ -212,6 +212,11 @@ class Blockchain(object):
 
         return True
 
+    def clearCurrentTransactions(self):
+        self.current_transactions = []
+
+        return self.current_transactions
+
 
 
 # instantiate our node
@@ -292,6 +297,14 @@ def newTransaction():
 def currentTransactions():
     response = {
         'current_transactions': blockchain.current_transactions,
+    }
+
+    return jsonify(response), 200
+
+@app.route('/transactions/clear', methods=['GET'])
+def clearCurrentTransactions():
+    response = {
+        'current_transactions' : blockchain.clearCurrentTransactions()
     }
 
     return jsonify(response), 200
