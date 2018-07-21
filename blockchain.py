@@ -198,6 +198,21 @@ class Blockchain(object):
 
         return self.current_transactions
 
+    def broadcastTransaction(self, transaction):
+        neighbours = self.nodes
+        payload = json.dumps(transaction)
+
+        for node in neighbours:
+            requests.post(url = f'http://{node}/transaction/broadcast', data = payload)
+
+        return True
+
+    def saveBroadcastedTransaction(self, transaction):
+        self.current_transactions.append(transaction)
+
+        return True
+
+
 
 # instantiate our node
 app = Flask(__name__)
@@ -259,6 +274,8 @@ def newTransaction():
     if (canPerformNewTransaction):
         # creates a new transaction
         index = blockchain.newTransaction(values['sender'], values['recipient'], values['amount'])
+        blockchain.broadcastTransaction(blockchain.current_transactions[-1])
+
         response = {
             'message': f'Transaction will be added to Block {index}',
         }
@@ -287,6 +304,15 @@ def syncTransactions():
 
     return jsonify(response), 200
 
+@app.route('/transaction/broadcast', methods=['POST'])
+def saveBroadcastedTransaction():
+    transaction = json.loads(request.data)
+
+    response = {
+        'success': blockchain.saveBroadcastedTransaction(transaction)
+    }
+
+    return jsonify(response), 200
 
 @app.route('/chain', methods=['GET'])
 def fullChain():
