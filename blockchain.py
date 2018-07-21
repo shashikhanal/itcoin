@@ -158,7 +158,11 @@ class Blockchain(object):
                 elif transaction['recipient'] == node_identifier:
                     received_balance += transaction['amount']
 
-        return sent_balance, received_balance, received_balance - sent_balance
+        return {
+            'sent_balance': sent_balance,
+            'received_balance': received_balance,
+            'net_balance': received_balance - sent_balance
+        }
 
 
 # instantiate our node
@@ -306,9 +310,9 @@ def getBalance():
     balance = blockchain.getBalance()
 
     response = {
-        'sent': balance[0],
-        'received': balance[1],
-        'net': balance[2],
+        'sent_amount': balance['sent_balance'],
+        'received_amount': balance['received_balance'],
+        'net_amount': balance['net_balance']
     }
 
     return jsonify(response), 200
