@@ -164,6 +164,25 @@ class Blockchain(object):
             'net_balance': received_balance - sent_balance
         }
 
+    def canPerformNewTransaction(self, values):
+        # cannot perform transaction between same address
+        if values['sender'] == values['recipient']:
+            return False
+
+        # cannot send amount to self address
+        if values['recipient'] == node_identifier:
+            return False
+
+        if values['sender'] == node_identifier:
+            currentBalance = blockchain.getBalance()
+
+            if (currentBalance['net_amount'] - values['amount'] < 0):
+                return False
+
+            return True
+
+        return False
+
 
 # instantiate our node
 app = Flask(__name__)
@@ -219,13 +238,23 @@ def newTransaction():
     if not all (k in values for k in required):
         return 'Missing values', 400
 
-    # creates a new transaction
-    index = blockchain.newTransaction(values['sender'], values['recipient'], values['amount'])
-    response = {
-        'message': f'Transaction will be added to Block {index}',
-    }
+    canPerformNewTransaction = blockchain.canPerformNewTransaction(values)
 
-    return jsonify(response), 201
+    if (canPerformNewTransaction):
+        # creates a new transaction
+        index = blockchain.newTransaction(values['sender'], values['recipient'], values['amount'])
+        response = {
+            'message': f'Transaction will be added to Block {index}',
+        }
+        status = 201
+    else:
+        response = {
+            'message': 'You do not have sufficient balance to perform this transaction.',
+            'balance': blockchain.getBalance()
+        }
+        status = 409
+
+    return jsonify(response), status
 
 @app.route('/transactions/current', methods=['GET'])
 def currentTransactions():
