@@ -217,6 +217,11 @@ class Blockchain(object):
 
         return self.current_transactions
 
+    def clearNodes(self):
+        self.nodes = set()
+
+        return self.nodes
+
 
 
 # instantiate our node
@@ -380,6 +385,14 @@ def getNodes():
 
     return jsonify(response), 200
 
+@app.route('/nodes/clear', methods=['GET'])
+def clearNodes():
+    response = {
+        'nodes': list(blockchain.clearNodes())
+    }
+
+    return jsonify(response), 200
+
 @app.route('/who-am-i', methods=['GET'])
 def getIdentifier():
     response = {
@@ -415,6 +428,7 @@ def getBalance():
     }
 
     return jsonify(response), 200
+
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
