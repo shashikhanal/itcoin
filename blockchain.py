@@ -71,7 +71,7 @@ class Blockchain(object):
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
 
-        return guess_hash[:4] == "0000"
+        return guess_hash[:6] == "000000"
 
     def registerNode(self, address):
         parsed_url = urlparse(address)
